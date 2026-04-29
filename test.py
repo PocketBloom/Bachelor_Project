@@ -170,14 +170,14 @@ ax.set_aspect('equal')
 #I assume that I load the spice kernels and use the same start and stop time
 
 
-# Create default body settings for "Earth"
-bodies_to_create_TU3 = ["Earth"]
+# Create default body settings for "Sun"
+bodies_to_create_TU3 = ["Sun"]
 
-# Create default body settings for bodies_to_create, with "Earth"/"J2000" as the global frame origin 
+# Create default body settings for bodies_to_create, with "Sun"/"J2000" as the global frame origin 
 # and orientation
-# So, we choose to consider the body of Earth
+# So, we choose to consider the body of Sun
 
-global_frame_origin_TU3 = "Earth"
+global_frame_origin_TU3 = "Sun"
 # I believe we always choose this
 global_frame_orientation_TU3 = "J2000"
 
@@ -185,22 +185,22 @@ body_settings_TU3 = environment_setup.get_default_body_settings(
     bodies_to_create_TU3, global_frame_origin_TU3, global_frame_orientation_TU3)
 
 # Add empty settings to body settings
-# Create the massless satellite for which the orbit around Earth will be propagated
+# Create the massless satellite for which the orbit around Sun will be propagated
 body_settings_TU3.add_empty_settings("TU3")
 
-# Create system of bodies (in this case only Earth)
+# Create system of bodies (in this case only Sun)
 bodies_TU3 = environment_setup.create_system_of_bodies(body_settings_TU3)
 
 # Define bodies that are propagated
 bodies_to_propagate_TU3 = ["TU3-1998"]
 
 # Define central bodies of propagation
-central_bodies_TU3 = ["Earth"]
+central_bodies_TU3 = ["Sun"]
 
 
 # Acceleration model:
 
-# Define accelerations acting on Delfi-C3
+# Define accelerations acting on TU3-1998
 acceleration_settings_TU3 = dict(
     Earth=[propagation_setup.acceleration.point_mass_gravity()]
 )
@@ -221,15 +221,16 @@ acceleration_models_TU3 = propagation_setup.create_acceleration_models(
 # Keplerian elements and later on converted to Cartesian elements
 
 # Let's just test what happens with the same initial state
-earth_gravitational_parameter_TU3 = bodies_TU3.get("Earth").gravitational_parameter
+sun_gravitational_parameter_TU3 = bodies_TU3.get("Sun").gravitational_parameter
+
 initial_state_TU3 = element_conversion.keplerian_to_cartesian_elementwise(
-    gravitational_parameter_TU3=earth_gravitational_parameter,
-    semi_major_axis_TU3=6.99276221e+06,
-    eccentricity_TU3=4.03294322e-03,
-    inclination_TU3=1.71065169e+00,
-    argument_of_periapsis_TU3=1.31226971e+00,
-    longitude_of_ascending_node_TU3=3.82958313e-01,
-    true_anomaly_TU3=3.07018490e+00,
+    gravitational_parameter_TU3=sun_gravitational_parameter_TU3,
+    semi_major_axis_TU3 = 117815568541, #meters
+    eccentricity_TU3 = 0.4836694929440215, #unitless
+    inclination_TU3 = np.radians(5.415250040031074), #radians
+    argument_of_periapsis_TU3 = np.radians(84.99253804349257),
+    longitude_of_ascending_node_TU3 = np.radians(101.8786744779986),
+    true_anomaly_TU3=2.2486890775e+00, #calculated with e, M, and E.
 )
 
 
@@ -253,10 +254,24 @@ propagator_settings_TU3 = propagation_setup.propagator.translational(
 )
 
 # Create simulation object and propagate the dynamics
-dynamics_simulator = simulator.create_dynamics_simulator(
-    bodies, propagator_settings
+dynamics_simulator_TU3 = simulator.create_dynamics_simulator(
+    bodies_TU3, propagator_settings_TU3
 )
 # Extract the resulting state history and convert it to an ndarray
-states = dynamics_simulator.propagation_results.state_history
-states_array = result2array(states)
+states_TU3 = dynamics_simulator_TU3.propagation_results.state_history
+states_array_TU3 = result2array(states_TU3)
+
+print(
+    f"""
+Single Earth-Orbiting Satellite Example.
+The initial position vector of Delfi-C3 is [km]: \n{
+    states_TU3[simulation_start_epoch][:3] / 1E3}
+The initial velocity vector of Delfi-C3 is [km/s]: \n{
+    states_TU3[simulation_start_epoch][3:] / 1E3}
+\nAfter {simulation_end_epoch} seconds the position vector of Delfi-C3 is [km]: \n{
+    states_TU3[simulation_end_epoch][:3] / 1E3}
+And the velocity vector of Delfi-C3 is [km/s]: \n{
+    states_TU3[simulation_end_epoch][3:] / 1E3}
+    """
+)
 
