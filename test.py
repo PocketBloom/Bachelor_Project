@@ -186,7 +186,7 @@ body_settings_TU3 = environment_setup.get_default_body_settings(
 
 # Add empty settings to body settings
 # Create the massless satellite for which the orbit around Sun will be propagated
-body_settings_TU3.add_empty_settings("TU3")
+body_settings_TU3.add_empty_settings("TU3-1998")
 
 # Create system of bodies (in this case only Sun)
 bodies_TU3 = environment_setup.create_system_of_bodies(body_settings_TU3)
@@ -202,7 +202,7 @@ central_bodies_TU3 = ["Sun"]
 
 # Define accelerations acting on TU3-1998
 acceleration_settings_TU3 = dict(
-    Earth=[propagation_setup.acceleration.point_mass_gravity()]
+    Sun=[propagation_setup.acceleration.point_mass_gravity()]
 )
 
 acceleration_settings_TU3 = {"TU3-1998": acceleration_settings_TU3}
@@ -224,14 +224,24 @@ acceleration_models_TU3 = propagation_setup.create_acceleration_models(
 sun_gravitational_parameter_TU3 = bodies_TU3.get("Sun").gravitational_parameter
 
 initial_state_TU3 = element_conversion.keplerian_to_cartesian_elementwise(
-    gravitational_parameter_TU3=sun_gravitational_parameter_TU3,
-    semi_major_axis_TU3 = 117815568541, #meters
-    eccentricity_TU3 = 0.4836694929440215, #unitless
-    inclination_TU3 = np.radians(5.415250040031074), #radians
-    argument_of_periapsis_TU3 = np.radians(84.99253804349257),
-    longitude_of_ascending_node_TU3 = np.radians(101.8786744779986),
-    true_anomaly_TU3=2.2486890775e+00, #calculated with e, M, and E.
+   gravitational_parameter = sun_gravitational_parameter_TU3,
+   semi_major_axis = 117815568541, #meters
+   eccentricity = 0.4836694929440215, #unitless
+   inclination = np.radians(5.415250040031074), #radians
+   argument_of_periapsis = np.radians(84.99253804349257),
+   longitude_of_ascending_node = np.radians(101.8786744779986),
+   true_anomaly = 2.2486890775e+00, #calculated with e, M, and E.
 )
+
+# initial_state_TU3 = element_conversion.keplerian_to_cartesian_elementwise(
+#     sun_gravitational_parameter_TU3,
+#     117815568541, #meters
+#     0.4836694929440215, #unitless
+#     np.radians(5.415250040031074), #radians
+#     np.radians(84.99253804349257),
+#     np.radians(101.8786744779986),
+#     2.2486890775e+00, #calculated with e, M, and E.
+# )
 
 
 # Create termination settings
@@ -239,8 +249,8 @@ termination_settings_TU3 = propagation_setup.propagator.time_termination(simulat
 
 # Create numerical integrator settings
 integrator_settings_TU3 = propagation_setup.integrator.runge_kutta_fixed_step(
-    time_step_TU3 = 10.0,
-    coefficient_set_TU3 = propagation_setup.integrator.CoefficientSets.rk_4 )
+    time_step = 10.0,
+    coefficient_set = propagation_setup.integrator.CoefficientSets.rk_4 )
 
 # Create propagation settings
 propagator_settings_TU3 = propagation_setup.propagator.translational(
@@ -263,15 +273,36 @@ states_array_TU3 = result2array(states_TU3)
 
 print(
     f"""
-Single Earth-Orbiting Satellite Example.
-The initial position vector of Delfi-C3 is [km]: \n{
+Single Sun-Orbiting Satellite Example.
+The initial position vector of TU3 is [km]: \n{
     states_TU3[simulation_start_epoch][:3] / 1E3}
-The initial velocity vector of Delfi-C3 is [km/s]: \n{
+The initial velocity vector of TU3 is [km/s]: \n{
     states_TU3[simulation_start_epoch][3:] / 1E3}
-\nAfter {simulation_end_epoch} seconds the position vector of Delfi-C3 is [km]: \n{
+\nAfter {simulation_end_epoch} seconds the position vector of TU3 is [km]: \n{
     states_TU3[simulation_end_epoch][:3] / 1E3}
-And the velocity vector of Delfi-C3 is [km/s]: \n{
+And the velocity vector of TU3 is [km/s]: \n{
     states_TU3[simulation_end_epoch][3:] / 1E3}
     """
 )
 
+# Define a 3D figure using pyplot
+fig = plt.figure(figsize=(6,6), dpi=125)
+ax = fig.add_subplot(111, projection='3d')
+ax.set_title(f'TU3 trajectory around Sun')
+
+# Plot the positional state history
+ax.plot(states_array_TU3[:, 1], states_array_TU3[:, 2], states_array_TU3[:, 3], label=bodies_to_propagate_TU3[0], linestyle='-.')
+ax.scatter(0.0, 0.0, 0.0, label="Sun", marker='o', color='orange')
+
+print("Before final graph")
+
+# Add the legend and labels, then show the plot
+ax.legend()
+ax.set_xlabel('x [m]')
+ax.set_ylabel('y [m]')
+ax.set_zlabel('z [m]')
+ax.set_aspect('equal')
+plt.show()
+plt.close('all')
+
+print("End of code")
