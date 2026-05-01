@@ -49,13 +49,13 @@ body_settings_TU3 = environment_setup.get_default_body_settings(
 
 # Add empty settings to body settings
 # Create the massless satellite for which the orbit around Sun will be propagated
-body_settings_TU3.add_empty_settings("TU3-1998")
+body_settings_TU3.add_empty_settings("TU3-199")
 
 # Create system of bodies (in this case only Sun)
 bodies_TU3 = environment_setup.create_system_of_bodies(body_settings_TU3)
 
 # Define bodies that are propagated
-bodies_to_propagate_TU3 = ["TU3-1998"]
+bodies_to_propagate_TU3 = ["TU3-199"]
 
 # Define central bodies of propagation
 central_bodies_TU3 = ["Sun"]
@@ -68,7 +68,7 @@ acceleration_settings_TU3 = dict(
     Sun=[propagation_setup.acceleration.point_mass_gravity()]
 )
 
-acceleration_settings_TU3 = {"TU3-1998": acceleration_settings_TU3}
+acceleration_settings_TU3 = {"TU3-199": acceleration_settings_TU3}
 
 # Create acceleration models
 acceleration_models_TU3 = propagation_setup.create_acceleration_models(
