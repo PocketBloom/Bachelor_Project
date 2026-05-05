@@ -16,8 +16,8 @@ class Asteroid_Table:
 # On my first try, I choose all the units which exist on the SSD.JPL Website:
 
 asteroids = [
-    Asteroid_Class("Eros", 0.22, 1.46),
-    Asteroid_Class("Ceres", 0.08, 2.77)
+    Asteroid_Table("Eros", 0.22, 1.46),
+    Asteroid_Table("Ceres", 0.08, 2.77)
 ]
 
 class Asteroids_Initial_Conds:
