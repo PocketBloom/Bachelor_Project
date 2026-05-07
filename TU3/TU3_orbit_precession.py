@@ -2,12 +2,11 @@
 # Goal: Simulate an accurate orbit and perihelion precession for TU3 
 # (Then it can be applied to the other asteroids)
 
-# Chapter 1: Apply General Relativity & Solar quadrupole Moment 
+# Chapter 1: Create a model with all the necessary bodies
+
+# Chapter 2: Apply General Relativity & Solar quadrupole Moment 
 # Also apply the Yarkowsky effect
 # For this argue why these effects are the only relevant
-
-# Chapter 2: Is it okay to use the Sun as a point-mass
-# Will several bodies be needed? Earth/ Jupiter? Their gravity?
 
 # -----------------------------------------------------------------------------
 
@@ -188,14 +187,14 @@ propagator_settings_hierarchical = propagation_setup.propagator.translational(
 # Then
 # Step 7, run the simulation:
 
-# Using print commands to keep track of the progress
-print("now running the barycentric simulation...")
+# Using print commands to keep track of the code
+print("Now running the barycentric simulation...")
 results_barycentric = simulator.create_dynamics_simulator(body_system, propagator_settings_barycentric).state_history
 
 
 
 # Step 8: Plot the results
-print("Start of plot")
+print("Start of barycentric plot")
 
 barycentric_array = result2array(results_barycentric)
 
@@ -213,8 +212,8 @@ ax.set_xlabel('x [m]')
 ax.set_ylabel('y [m]')
 ax.set_zlabel('z [m]')
 
-# Expanded limits to see at least out to Saturn
-limit = 2.0E12 
+# Alter the limits depending on what you wish to see (Mars is at ~2.0E11 while Naptune can be seen at ~2.0E12)
+limit = 2.0E11
 ax.set_xlim([-limit, limit])
 ax.set_ylim([-limit, limit])
 ax.set_zlim([-limit, limit])
@@ -222,4 +221,77 @@ ax.set_zlim([-limit, limit])
 plt.tight_layout()
 plt.show()
 
-print("End of plot")
+print("End of barycentric plot")
+
+
+# Now for the hierarchical data
+print("Now running the hierarchical simulation...")
+results_hierarchical = simulator.create_dynamics_simulator(body_system, propagator_settings_hierarchical).state_history
+
+# Convert results to array once more
+hierarchical_system_state_array = result2array(results_hierarchical)
+
+print("Start of hierarchical figures")
+# Create a taller figure for four subplots
+fig1 = plt.figure(figsize=(14, 14))
+
+# --- Subplot 1: Sun w.r.t SSB ---
+ax1 = fig1.add_subplot(221, projection='3d')
+ax1.set_title('1. Trajectory of the Sun w.r.t SSB')
+ax1.scatter(0, 0, 0, marker='x', label="SSB", color='black')
+
+# --- Subplot 2: Planets & TU3 w.r.t Sun (Overview) ---
+ax2 = fig1.add_subplot(222, projection='3d')
+ax2.set_title('2. Global Solar System w.r.t Sun')
+ax2.scatter(0, 0, 0, marker='o', label="Sun", color='orange')
+
+# --- Subplot 3: Moon w.r.t Earth ---
+ax3 = fig1.add_subplot(223, projection='3d')
+ax3.set_title('3. Trajectory of the Moon w.r.t Earth')
+ax3.scatter(0, 0, 0, marker='o', label="Earth", color='blue')
+
+# --- Subplot 4: 1998 TU3 w.r.t Sun (Isolated) ---
+ax4 = fig1.add_subplot(224, projection='3d')
+ax4.set_title('4. Isolated Orbit of 1998 TU3 w.r.t Sun')
+ax4.scatter(0, 0, 0, marker='o', label="Sun", color='orange')
+
+for i, body in enumerate(bodies_to_propagate):
+    x = hierarchical_system_state_array[:, 6 * i + 1]
+    y = hierarchical_system_state_array[:, 6 * i + 2]
+    z = hierarchical_system_state_array[:, 6 * i + 3]
+
+    if body == "Sun":
+        ax1.plot(x, y, z, label=body)
+    elif body == "Moon":
+        ax3.plot(x, y, z, label=body)
+    elif body == "1998-TU3":
+        # Plot TU3 in the global view (ax2) AND the isolated view (ax4)
+        ax2.plot(x, y, z, label=body, linestyle='--')
+        ax4.plot(x, y, z, label=body, linestyle='--', color='red')
+    else:
+        # All other planets go to the global view
+        ax2.plot(x, y, z, label=body)
+
+# Define limits for each subplot [m]
+ax_lims = [
+    [-2.0E9, 2.0E9],    # 1. Sun's wobble
+    [-2.0E12, 2.0E12],  # 2. Solar system overview
+    [-5.0E8, 5.0E8],    # 3. Lunar orbit
+    [-5.0E11, 5.0E11]   # 4. TU3 specific (Zoomed into its orbit)
+]
+
+axs = [ax1, ax2, ax3, ax4]
+
+for ax, ax_lim in zip(axs, ax_lims):
+    ax.legend(loc='upper left', bbox_to_anchor=(1.05, 1))
+    ax.set_xlabel('x [m]')
+    ax.set_ylabel('y [m]')
+    ax.set_zlabel('z [m]')
+    ax.set_xlim(ax_lim)
+    ax.set_ylim(ax_lim)
+    ax.set_zlim(ax_lim)
+
+plt.tight_layout()
+plt.show()
+
+print("End of hierarchical figures")
