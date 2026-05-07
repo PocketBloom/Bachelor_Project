@@ -2,11 +2,11 @@
 # Goal: Simulate an accurate orbit and perihelion precession for TU3 
 # (Then it can be applied to the other asteroids)
 
-# Middle steps 1: Apply General Relativity & Solar quadrupole Moment 
+# Chapter 1: Apply General Relativity & Solar quadrupole Moment 
 # Also apply the Yarkowsky effect
 # For this argue why these effects are the only relevant
 
-# Middle steps 2: Is it okay to use the Sun as a point-mass
+# Chapter 2: Is it okay to use the Sun as a point-mass
 # Will several bodies be needed? Earth/ Jupiter? Their gravity?
 
 # -----------------------------------------------------------------------------
@@ -25,6 +25,8 @@ from tudatpy import constants
 from tudatpy.util import result2array
 from tudatpy.astro.time_representation import DateTime
 
+# Step 1: Setup Conditions/ Basic Conditions
+
 # Load spice kernels
 spice.load_standard_kernels()
 
@@ -35,8 +37,10 @@ simulation_start_epoch = DateTime(2000, 4, 25).to_epoch()
 simulation_end_epoch   = simulation_start_epoch + 5 * constants.JULIAN_YEAR
 
 
-# Define bodies in simulation
-bodies_to_create = [
+# Step 2: Define bodies in simulation
+
+# These bodies exist isnide of SPICE and are well-defined
+larger_bodies_to_create = [
     "Sun",
     "Earth",
     "Moon",
@@ -46,18 +50,27 @@ bodies_to_create = [
     "Jupiter",
     "Saturn",
     "Uranus",
-    "Neptune",
-    # Then include the asteroid
-    "1998 TU3"
+    "Neptune"
 ]
 
+# Manually add 1998 TU3
+asteroid_name = "1998-TU3"
+
+bodies_to_create = larger_bodies_to_create + [asteroid_name]
 bodies_to_propagate = bodies_to_create
 
 # Create bodies in simulation.
-body_settings = environment_setup.get_default_body_settings(bodies_to_create)
+
+# Pull on the data already known for the larger bodies
+body_settings = environment_setup.get_default_body_settings(larger_bodies_to_create)
+# Manually add empty settings for the asteroid
+body_settings.add_empty_settings(asteroid_name)
+
+# Thus, the environment becomes:
 body_system = environment_setup.create_system_of_bodies(body_settings)
 
 
+# Step 3: Create Propagation Setup (barycentric and hierarchic)
 
 # Central bodies for barycentric propagation
 # Ensures that every body propagates around the Solar System's Barycenter 
@@ -72,11 +85,12 @@ for body_name in bodies_to_create:
     elif body_name == "Sun":
         central_bodies_hierarchical.append("SSB")
     else:
-        # Asteroids are assigned to the Sun
+        # Planets and asteroids are assigned to the Sun
         central_bodies_hierarchical.append("Sun")
 
 
-# Define the accelerations acting on each body
+# Step 4: Define the accelerations acting on each body
+
 # Assume each body is a point mass
 acceleration_dict = {}
 for body_i in bodies_to_create:
@@ -88,6 +102,9 @@ for body_i in bodies_to_create:
             ]
     acceleration_dict[body_i] = current_accelerations
 
+
+# Step 5: Define the Initial States of Each Body
+# This is where we mix SPICE data (for the planets) with Keplerian data (the asteroid)
 
 # Convert acceleration mappings into acceleration models for both propagation variants
 for propagation_variant in ["barycentric", "hierarchical"]:
