@@ -27,6 +27,8 @@ spice.load_standard_kernels()
 simulation_start_epoch = DateTime(2000, 1, 1).to_epoch()
 simulation_end_epoch   = DateTime(2001, 1, 1).to_epoch()
 
+# The start time is changed to 2025-Nov-21 (see JPL Horizon --> initial condition)
+
 # simulation_start_epoch = DateTime(2025, 9, 21).to_epoch()
 # simulation_end_epoch   = DateTime(2026, 9, 21).to_epoch()
 
@@ -90,15 +92,15 @@ acceleration_models_TU3 = propagation_setup.create_acceleration_models(
 # Let's just test what happens with the same initial state
 sun_gravitational_parameter_TU3 = bodies_TU3.get("Sun").gravitational_parameter
 
-initial_state_TU3 = element_conversion.keplerian_to_cartesian_elementwise(
-   gravitational_parameter = sun_gravitational_parameter_TU3,
-   semi_major_axis = 117815568541, #meters
-   eccentricity = 0.4836694929440215, #unitless
-   inclination = np.radians(5.415250040031074), #radians
-   argument_of_periapsis = np.radians(84.99253804349257),
-   longitude_of_ascending_node = np.radians(101.8786744779986),
-   true_anomaly = 2.2486890775e+00, #calculated with e, M, and E.
-)
+# initial_state_TU3 = element_conversion.keplerian_to_cartesian_elementwise(
+#    gravitational_parameter = sun_gravitational_parameter_TU3,
+#    semi_major_axis = 117815568541, #meters
+#    eccentricity = 0.4836694929440215, #unitless
+#    inclination = np.radians(5.415250040031074), #radians
+#    argument_of_periapsis = np.radians(84.99253804349257),
+#    longitude_of_ascending_node = np.radians(101.8786744779986),
+#    true_anomaly = 2.2486890775e+00, #calculated with e, M, and E.
+# )
 
 # initial_state_TU3 = element_conversion.keplerian_to_cartesian_elementwise(
 #     sun_gravitational_parameter_TU3,
@@ -109,6 +111,43 @@ initial_state_TU3 = element_conversion.keplerian_to_cartesian_elementwise(
 #     np.radians(101.8786744779986),
 #     2.2486890775e+00, #calculated with e, M, and E.
 # )
+
+
+# Grabbing the initial state at 2000-01-01 from JPL with cartesian_to_keplarian() (in astro)
+
+
+# Cartesian state vector
+cartesian_elements = np.array([
+    [4.543863572576185E+07],   # X  [km]
+    [-9.673019712424231E+07],  # Y  [km]
+    [-2.313075952057116E+06],  # Z  [km]
+    [3.661410298575712E+01],   # VX [km/s]
+    [-1.757686929389374E+00],  # VY [km/s]
+    [-3.350242409196601E+00]   # VZ [km/s]
+], dtype=np.float64)
+
+
+test_initial_TU3_array = element_conversion.cartesian_to_keplerian(
+    cartesian_elements = cartesian_elements,
+    gravitational_parameter = sun_gravitational_parameter_TU3
+)
+
+print("Keplerian Elements:")
+print(test_initial_TU3_array)
+
+# ---------------------------------
+# Testing new initial condition
+
+initial_state_TU3 = element_conversion.keplerian_to_cartesian_elementwise(
+   gravitational_parameter = sun_gravitational_parameter_TU3,
+   semi_major_axis = test_initial_TU3_array[0],             #meters
+   eccentricity = test_initial_TU3_array[1],                #unitless
+   inclination = np.radians(test_initial_TU3_array[2]),     #radians
+   argument_of_periapsis = np.radians(test_initial_TU3_array[3]),
+   longitude_of_ascending_node = np.radians(test_initial_TU3_array[4]),
+   true_anomaly = test_initial_TU3_array[5],                
+)
+# ---------------------------------
 
 
 # Create termination settings
