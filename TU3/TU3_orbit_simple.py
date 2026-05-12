@@ -23,8 +23,12 @@ spice.load_standard_kernels()
 # Set simulation start and end epochs
 # So here end of the epoch is a day later :)
 # The start day is set to be 1st of January 2000 
+
 simulation_start_epoch = DateTime(2000, 1, 1).to_epoch()
 simulation_end_epoch   = DateTime(2001, 1, 1).to_epoch()
+
+# simulation_start_epoch = DateTime(2025, 9, 21).to_epoch()
+# simulation_end_epoch   = DateTime(2026, 9, 21).to_epoch()
 
 
 
@@ -173,16 +177,17 @@ print(x_TU3[0])
 import pandas as pd
 
 # Load CSV
-csv_data = pd.read_csv("asteroid_66146_vectors.csv")
+csv_data = pd.read_csv("/home/emmabob/Bachelor_Project/TU3/asteroid_66146_vectors.csv")
+# csv_data = pd.read_csv("/home/emmabob/Bachelor_Project/TU3/2025_Nov_21_JPL_vectors.csv")
 
 # Convert columns to arrays
-x_JPL = csv_data["x"].to_numpy()
-y_JPL = csv_data["y"].to_numpy()
-z_JPL = csv_data["z"].to_numpy()
+x_JPL = csv_data["x"].to_numpy() * 1e3 #km to m
+y_JPL = csv_data["y"].to_numpy() * 1e3
+z_JPL = csv_data["z"].to_numpy() * 1e3
 
-vx_JPL = csv_data["vx"].to_numpy()
-vy_JPL = csv_data["vy"].to_numpy()
-vz_JPL = csv_data["vz"].to_numpy()
+vx_JPL = csv_data["vx"].to_numpy() * 1e3
+vy_JPL = csv_data["vy"].to_numpy() * 1e3
+vz_JPL = csv_data["vz"].to_numpy() * 1e3
 
 print(states_TU3[0])
 print(states_array_TU3[5])
@@ -272,3 +277,197 @@ plt.show()
 # plt.close('all')
 
 # print("End of code")
+
+
+# Printing the orbit:
+
+# Define a 3D figure using pyplot
+fig = plt.figure(figsize=(6,6), dpi=125)
+ax = fig.add_subplot(111, projection='3d')
+ax.set_title(f'TU3 trajectory around Sun with JPL Data')
+
+# Plot the positional state history
+ax.plot(x_JPL, y_JPL, z_JPL, label="TU3 JPL", color='blueviolet', linestyle='-.')
+ax.plot(states_array_TU3[:, 1], states_array_TU3[:, 2], states_array_TU3[:, 3], label="TU3 Tudat", color='seagreen', linestyle='-.')
+ax.scatter(0.0, 0.0, 0.0, label="Sun", marker='o', color='orange')
+
+print("Before final graph")
+
+# Add the legend and labels, then show the plot
+ax.legend()
+ax.set_xlabel('x [m]')
+ax.set_ylabel('y [m]')
+ax.set_zlabel('z [m]')
+ax.set_xlim(-0.5e11, 0)
+ax.set_ylim(-1e11, 0)
+ax.set_zlim(-1e11, 1e11)
+
+#ax.set_aspect('equal')
+plt.show()
+plt.close('all')
+
+print("End of code")
+
+
+
+# Viasualisation with code:
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+from mpl_toolkits.mplot3d import Axes3D
+
+# ==========================================
+# ASSUMED ARRAYS
+# ==========================================
+# x_TU3, y_TU3, z_TU3
+# x_JPL, y_JPL, z_JPL
+#
+# all arrays must have same length
+# ==========================================
+
+# Create figure
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+# ==========================================
+# PLOT COMPLETE ORBITS
+# ==========================================
+
+ax.plot(
+    x_JPL,
+    y_JPL,
+    z_JPL,
+    '--',
+    label='TU3 JPL'
+)
+
+ax.plot(
+    x_TU3,
+    y_TU3,
+    z_TU3,
+    '-.',
+    label='TU3 Tudat'
+)
+
+# Sun at origin
+ax.scatter(
+    0,
+    0,
+    0,
+    s=100,
+    label='Sun',
+    color='orange'
+)
+
+# ==========================================
+# ANIMATED POINTS
+# ==========================================
+
+# JPL asteroid point
+point_JPL, = ax.plot(
+    [],
+    [],
+    [],
+    'o',
+    markersize=8,
+    label='JPL Position'
+)
+
+# Tudat asteroid point
+point_TU3, = ax.plot(
+    [],
+    [],
+    [],
+    'o',
+    markersize=8,
+    label='Tudat Position'
+)
+
+# ==========================================
+# AXIS LABELS
+# ==========================================
+
+ax.set_xlabel('x [m]')
+ax.set_ylabel('y [m]')
+ax.set_zlabel('z [m]')
+
+ax.set_title('TU3 Orbit Animation')
+
+ax.legend()
+
+# ==========================================
+# EQUAL AXIS SCALING
+# ==========================================
+
+max_range = np.array([
+    x_TU3.max() - x_TU3.min(),
+    y_TU3.max() - y_TU3.min(),
+    z_TU3.max() - z_TU3.min()
+]).max() / 2.0
+
+mid_x = (x_TU3.max() + x_TU3.min()) * 0.5
+mid_y = (y_TU3.max() + y_TU3.min()) * 0.5
+mid_z = (z_TU3.max() + z_TU3.min()) * 0.5
+
+ax.set_xlim(mid_x - max_range, mid_x + max_range)
+ax.set_ylim(mid_y - max_range, mid_y + max_range)
+ax.set_zlim(mid_z - max_range, mid_z + max_range)
+
+# ==========================================
+# INITIALIZATION FUNCTION
+# ==========================================
+
+def init():
+
+    point_JPL.set_data([], [])
+    point_JPL.set_3d_properties([])
+
+    point_TU3.set_data([], [])
+    point_TU3.set_3d_properties([])
+
+    return point_JPL, point_TU3
+
+# ==========================================
+# ANIMATION FUNCTION
+# ==========================================
+
+def update(frame):
+
+    # Update JPL point
+    point_JPL.set_data(
+        [x_JPL[frame]],
+        [y_JPL[frame]]
+    )
+
+    point_JPL.set_3d_properties(
+        [z_JPL[frame]]
+    )
+
+    # Update Tudat point
+    point_TU3.set_data(
+        [x_TU3[frame]],
+        [y_TU3[frame]]
+    )
+
+    point_TU3.set_3d_properties(
+        [z_TU3[frame]]
+    )
+
+    return point_JPL, point_TU3
+
+# ==========================================
+# CREATE ANIMATION
+# ==========================================
+
+ani = FuncAnimation(
+    fig,
+    update,
+    frames=len(x_TU3),
+    init_func=init,
+    interval=30,      # milliseconds between frames
+    blit=True
+)
+
+plt.show()
+
