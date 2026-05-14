@@ -71,7 +71,13 @@ central_bodies_TU3 = ["Sun"]
 
 # Define accelerations acting on TU3-1998
 acceleration_settings_TU3 = dict(
-    Sun=[propagation_setup.acceleration.point_mass_gravity()]
+    Sun=
+    [
+        propagation_setup.acceleration.point_mass_gravity(),
+        # propagation_setup.acceleration.relativistic_correction(use_schwarzschild=True),
+        # propagation_setup.acceleration.yarkovsky(-2.65*10**(-14)),           # The Yarkovsky parameter
+        # propagation_setup.acceleration.spherical_harmonic()                  # The solar quadrupole moment
+    ],
 )
 
 acceleration_settings_TU3 = {"TU3-199": acceleration_settings_TU3}
@@ -118,12 +124,12 @@ sun_gravitational_parameter_TU3 = bodies_TU3.get("Sun").gravitational_parameter
 
 # Cartesian state vector
 cartesian_elements = np.array([
-    [4.543863572576185E+07],   # X  [km]
-    [-9.673019712424231E+07],  # Y  [km]
-    [-2.313075952057116E+06],  # Z  [km]
-    [3.661410298575712E+01],   # VX [km/s]
-    [-1.757686929389374E+00],  # VY [km/s]
-    [-3.350242409196601E+00]   # VZ [km/s]
+    [4.543863572576185E+07 * 1e3],   # X  [m]
+    [-9.673019712424231E+07 * 1e3],  # Y  [m]
+    [-2.313075952057116E+06 * 1e3],  # Z  [m]
+    [3.661410298575712E+01 * 1e3],   # VX [m/s]
+    [-1.757686929389374E+00 * 1e3],  # VY [m/s]
+    [-3.350242409196601E+00 * 1e3]   # VZ [m/s]
 ], dtype=np.float64)
 
 
@@ -134,17 +140,19 @@ test_initial_TU3_array = element_conversion.cartesian_to_keplerian(
 
 print("Keplerian Elements:")
 print(test_initial_TU3_array)
+print(test_initial_TU3_array[0])
+print(test_initial_TU3_array[2])
 
 # ---------------------------------
 # Testing new initial condition
 
 initial_state_TU3 = element_conversion.keplerian_to_cartesian_elementwise(
    gravitational_parameter = sun_gravitational_parameter_TU3,
-   semi_major_axis = test_initial_TU3_array[0],             #meters
-   eccentricity = test_initial_TU3_array[1],                #unitless
-   inclination = np.radians(test_initial_TU3_array[2]),     #radians
-   argument_of_periapsis = np.radians(test_initial_TU3_array[3]),
-   longitude_of_ascending_node = np.radians(test_initial_TU3_array[4]),
+   semi_major_axis = test_initial_TU3_array[0],                 #meters
+   eccentricity = test_initial_TU3_array[1],                    #unitless
+   inclination = test_initial_TU3_array[2],                     # cartesian_to_keplerian returns angles in radians
+   argument_of_periapsis = test_initial_TU3_array[3],
+   longitude_of_ascending_node = test_initial_TU3_array[4],
    true_anomaly = test_initial_TU3_array[5],                
 )
 # ---------------------------------
@@ -220,11 +228,11 @@ csv_data = pd.read_csv("/home/emmabob/Bachelor_Project/TU3/asteroid_66146_vector
 # csv_data = pd.read_csv("/home/emmabob/Bachelor_Project/TU3/2025_Nov_21_JPL_vectors.csv")
 
 # Convert columns to arrays
-x_JPL = csv_data["x"].to_numpy() * 1e3 #km to m
+x_JPL = csv_data["x"].to_numpy() * 1e3  # km to m
 y_JPL = csv_data["y"].to_numpy() * 1e3
 z_JPL = csv_data["z"].to_numpy() * 1e3
 
-vx_JPL = csv_data["vx"].to_numpy() * 1e3
+vx_JPL = csv_data["vx"].to_numpy() * 1e3    # km/s to m/s
 vy_JPL = csv_data["vy"].to_numpy() * 1e3
 vz_JPL = csv_data["vz"].to_numpy() * 1e3
 
