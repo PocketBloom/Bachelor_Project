@@ -13,8 +13,8 @@ params = {
     "COMMAND": "'66146'",
     "EPHEM_TYPE": "'VECTORS'",
     "CENTER": "'500@0'",            #SSB
-    "START_TIME": "'2000-01-01'",   #Defined start
-    "STOP_TIME": "'2001-01-01'",    #Defined stop
+    "START_TIME": "'2025-09-21'",   #Defined start
+    "STOP_TIME": "'2026-09-21'",    #Defined stop
     "STEP_SIZE": "'1 d'",
     "TIME_TYPE": "'TDB'",           #Barycentric Dynamical Time 
     "VEC_TABLE": "'2'",
@@ -59,10 +59,13 @@ for i in range(len(lines)):
 
 
 # Write CSV file
-with open("asteroid_66146_vectors.csv", "w", newline="") as f:
+with open("2025_Nov_21_JPL_vectors.csv", "w", newline="") as f:
     writer = csv.writer(f)
 
     writer.writerow(["x", "y", "z", "vx", "vy", "vz"])
     writer.writerows(rows)
 
 print(f"CSV file created with {len(rows)} rows")
+
+# 367 rows were created, which is the same length as the data (states_array) created by Tudat for TU3
+# (in the same time frame)
