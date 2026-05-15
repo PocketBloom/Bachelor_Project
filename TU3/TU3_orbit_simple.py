@@ -74,8 +74,8 @@ acceleration_settings_TU3 = dict(
     Sun=
     [
         propagation_setup.acceleration.point_mass_gravity(),
-        # propagation_setup.acceleration.relativistic_correction(use_schwarzschild=True),
-        # propagation_setup.acceleration.yarkovsky(-2.65*10**(-14)),           # The Yarkovsky parameter
+        propagation_setup.acceleration.relativistic_correction(use_schwarzschild=True),
+        propagation_setup.acceleration.yarkovsky(-2.65*10**(-14)),           # The Yarkovsky parameter
         # propagation_setup.acceleration.spherical_harmonic()                  # The solar quadrupole moment
     ],
 )
