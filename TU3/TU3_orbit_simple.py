@@ -34,12 +34,12 @@ simulation_end_epoch   = DateTime(2001, 1, 1).to_epoch()
 
 
 
-#ME TRYING TO FIND TU3
+# ME TRYING TO FIND TU3
 
-#I assume that I load the spice kernels and use the same start and stop time
+# I assume that I load the spice kernels and use the same start and stop time
 
 
-# Create default body settings for "Sun"
+# Create default body settings for the Sun
 bodies_to_create_TU3 = ["Sun"]
 
 # Create default body settings for bodies_to_create, with "Sun"/"J2000" as the global frame origin 
@@ -75,7 +75,7 @@ acceleration_settings_TU3 = dict(
     [
         propagation_setup.acceleration.point_mass_gravity(),
         propagation_setup.acceleration.relativistic_correction(use_schwarzschild=True),
-        propagation_setup.acceleration.yarkovsky(-2.65*10**(-14)),           # The Yarkovsky parameter
+        # propagation_setup.acceleration.yarkovsky(-2.65*10**(-14)),           # The Yarkovsky parameter
         # propagation_setup.acceleration.spherical_harmonic()                  # The solar quadrupole moment
     ],
 )
@@ -278,7 +278,7 @@ plt.title('Tudat vs JPL Position Differences')
 plt.legend()
 plt.grid(True)
 
-plt.show()
+# plt.show()
 
 
 # =========================
@@ -298,7 +298,7 @@ plt.title('Tudat vs JPL Velocity Differences')
 plt.legend()
 plt.grid(True)
 
-plt.show()
+# plt.show()
 
 
 
@@ -352,8 +352,8 @@ ax.set_ylim(-1e11, 0)
 ax.set_zlim(-1e11, 1e11)
 
 #ax.set_aspect('equal')
-plt.show()
-plt.close('all')
+# plt.show()
+# plt.close('all')
 
 print("End of code")
 
@@ -518,7 +518,7 @@ ani = FuncAnimation(
     blit=True
 )
 
-plt.show()
+# plt.show()
 
 
 
@@ -602,9 +602,9 @@ for i in index_list_peri:
 print(f"The perihelion occurs at the omega of: {omega_values[219]}")
 print(peri_precession_per_orbit_list)
 
-plt.plot(peri_precession_per_orbit_list)
-plt.ylabel('The perihelion precession (in degrees)')
-plt.show()
+# plt.plot(peri_precession_per_orbit_list)
+# plt.ylabel('The perihelion precession (in degrees)')
+# plt.show()
 
 omega_deg = np.degrees(omega_values) * 3600 # arcseconds
 
