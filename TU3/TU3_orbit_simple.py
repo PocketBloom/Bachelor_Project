@@ -177,6 +177,8 @@ propagator_settings_TU3 = propagation_setup.propagator.translational(
     termination_settings_TU3
 )
 
+
+
 # Create simulation object and propagate the dynamics
 dynamics_simulator_TU3 = simulator.create_dynamics_simulator(
     bodies_TU3, propagator_settings_TU3
@@ -518,3 +520,101 @@ ani = FuncAnimation(
 
 plt.show()
 
+
+
+
+
+# ========================================
+# Testing for the perihelion precession:
+
+from tudatpy.kernel.astro import element_conversion
+
+kepler_history = {}
+
+for epoch, state in states_TU3.items():
+
+    # Convert from Cartesian to Keplerian coordinates
+    kepler = element_conversion.cartesian_to_keplerian(
+        cartesian_elements = state,     # x, y, z, vx, vy, vz at each step (3600.0 seconds)
+        gravitational_parameter = sun_gravitational_parameter_TU3
+    )
+
+    # Fill up the dictionary
+    kepler_history[epoch] = kepler
+
+epochs = []
+omega_values_anglejump = []
+true_anomaly_list = []
+epoch_perihelion_list = []
+index_list_peri = []
+
+# To detect the perihelion in time
+previous_nu = None
+
+for i, (epoch, kep) in enumerate(kepler_history.items(), start=1):
+
+    # Extract the true anomaly
+    nu = kep[5]
+
+    if previous_nu is not None:
+
+        # Detect wraparound near perihelion
+        # Cause there will be a jump from 2pi to 0
+        if previous_nu > (3/2)*np.pi and nu < (1/2)*np.pi:
+            
+            epoch_perihelion_close = epoch
+            epoch_perihelion_list.append(epoch_perihelion_close)
+            index_list_peri.append(i)
+
+            # epoch_days = epoch / (3600*24)
+            # print(f"The perihelion is near the epoch of {epoch_perihelion_close}")
+
+    previous_nu = nu
+
+    # Extract the perihelion precession as well
+
+    omega_test = kep[3]
+    epochs.append(epoch)
+
+    omega_values_anglejump.append(omega_test)
+
+# Unwrap the angles :)
+# Makes e.g. 359, 0, 1 degrees to 359, 360, 361 etc.
+omega_values = np.unwrap(omega_values_anglejump)
+
+print(f"The list of when the perihelion occurs (in seconds): {epoch_perihelion_list}")
+print(f"The index which is closest to the perihelion: {index_list_peri}")
+
+
+# # The perihelion precession during the first year:
+# first_peri = perihelion_precess = np.degrees(omega_values[5234] -  omega_values[0])
+# # The perihelion precession after 15 years
+# peri_precess_15_years = np.degrees(omega_values[-1] - omega_values[5234])
+
+peri_precession_per_orbit_list = []
+
+for i in index_list_peri:
+    peri_deg = perihelion_precess = np.degrees(omega_values[i+1] -  omega_values[i])
+    peri_precession_per_orbit_list.append(peri_deg)
+
+# print(first_peri)
+# print(peri_precess_15_years)
+print(f"The perihelion occurs at the omega of: {omega_values[219]}")
+print(peri_precession_per_orbit_list)
+
+plt.plot(peri_precession_per_orbit_list)
+plt.ylabel('The perihelion precession (in degrees)')
+plt.show()
+
+omega_deg = np.degrees(omega_values) * 3600 # arcseconds
+
+time_years = np.array(epochs) / (100 * 3600 * 24 * 365.25)
+
+coeffs = np.polyfit(
+    time_years,
+    omega_deg,
+    1
+)
+
+slope_deg_per_year = coeffs[0]
+print(slope_deg_per_year)
