@@ -2,10 +2,10 @@ import tudatpy
 
 # Load standard modules
 import numpy as np
-#from matplotlib import pyplot as plt
-import matplotlib
-matplotlib.use('TkAgg')  # or try 'QtAgg'
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
+# import matplotlib
+# matplotlib.use('QtAgg')  # or try 'QtAgg'
+# import matplotlib.pyplot as plt
 
 # Load tudatpy modules
 from tudatpy.interface import spice
@@ -352,8 +352,8 @@ ax.set_ylim(-1e11, 0)
 ax.set_zlim(-1e11, 1e11)
 
 #ax.set_aspect('equal')
-# plt.show()
-# plt.close('all')
+plt.show()
+plt.close('all')
 
 print("End of code")
 
@@ -518,7 +518,7 @@ ani = FuncAnimation(
     blit=True
 )
 
-# plt.show()
+plt.show()
 
 
 
@@ -606,15 +606,36 @@ print(peri_precession_per_orbit_list)
 # plt.ylabel('The perihelion precession (in degrees)')
 # plt.show()
 
-omega_deg = np.degrees(omega_values) * 3600 # arcseconds
+# omega_deg = np.degrees(omega_values) * 3600 # arcseconds
 
-time_years = np.array(epochs) / (100 * 3600 * 24 * 365.25)
+# time_years = np.array(epochs) / (100 * 3600 * 24 * 365.25)
 
-coeffs = np.polyfit(
-    time_years,
-    omega_deg,
+# coeffs = np.polyfit(
+#     time_years,
+#     omega_deg,
+#     1
+# )
+
+# slope_deg_per_year = coeffs[0]
+# print(slope_deg_per_year)
+
+
+# Second attempt:
+
+# omega_deg = np.degrees(omega_values) * 3600 # arcseconds
+# time_years = np.array(epochs) / (100 * 3600 * 24 * 365.25)
+
+perihelion_test = np.array(peri_precession_per_orbit_list) * 3600
+epoch_test = np.array(epoch_perihelion_list) / (100 * 3600 * 24 * 365.25)
+
+coeffs_test = np.polyfit(
+    epoch_test,
+    #time_years,
+    perihelion_test,
+    #omega_deg,
     1
 )
 
-slope_deg_per_year = coeffs[0]
-print(slope_deg_per_year)
+slope_deg_per_century_test = coeffs_test[0]
+print(f"Perihelion precession of: {slope_deg_per_century_test:4f} arcseconds / century")
+# print(coeffs)
