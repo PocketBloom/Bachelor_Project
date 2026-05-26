@@ -10,11 +10,11 @@ url = "https://ssd.jpl.nasa.gov/api/horizons.api"
 # Query parameters
 params = {
     "format": "text",
-    "COMMAND": "'66146'",
+    "COMMAND": "'Ceres'",
     "EPHEM_TYPE": "'VECTORS'",
     "CENTER": "'500@0'",            #SSB
-    "START_TIME": "'2025-09-21'",   #Defined start
-    "STOP_TIME": "'2026-09-21'",    #Defined stop
+    "START_TIME": "'1999-12-29'",   #Defined start (at midnight)
+    "STOP_TIME": "'2010-01-03'",    #Defined stop
     "STEP_SIZE": "'1 d'",
     "TIME_TYPE": "'TDB'",           #Barycentric Dynamical Time 
     "VEC_TABLE": "'2'",
@@ -59,7 +59,7 @@ for i in range(len(lines)):
 
 
 # Write CSV file
-with open("2025_Nov_21_JPL_vectors.csv", "w", newline="") as f:
+with open("Ceres_JPL_vectors_10yrs_1day.csv", "w", newline="") as f:
     writer = csv.writer(f)
 
     writer.writerow(["x", "y", "z", "vx", "vy", "vz"])
