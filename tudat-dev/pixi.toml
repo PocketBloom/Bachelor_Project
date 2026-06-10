@@ -1,0 +1,14 @@
+[workspace]
+authors = ["PocketBloom <bobelisabeth10@gmail.com>"]
+channels = ["conda-forge", "tudat-team/label/dev", "tudat-team"]
+name = "tudat-dev"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+tudatpy = ">=1.0.0.dev57,<2"
+ipython = ">=9.14.1,<10"
+pip = ">=26.1.2,<27"
+ipykernel = ">=7.2.0,<8"
