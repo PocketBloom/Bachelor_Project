@@ -61,14 +61,57 @@ bodies, the Sun and NOT that specific planet). This was beneficial with
 e.g. Julipter, because it caused an oscillatory effect.
 
 
+# ----
+
+1.3 Photos_Folder:
+
+This folder contains all the photos and animations which I accumulated while
+testing the model
+
+# ----
+
+1.4 TU3
+
+This folder contains all of the trial runs (some okay and some quite unseccessful)
+of propagating asteroid TU3. See PROPAGATION for the relatively cleaner version.
+
+# ------------------------------------------------------------------------------------
+
+2. ESTIMATE
+
+It is worth mentioining that the folder Estimation contains many files
+that tirelessly attempted to estimate for asteroids. It turned out to
+be a bit more challenging than expected to estimate for lesser well-known
+asteroids and to create a model which didn't create hUGE errors. Thus,
+the folder ESTIMATE contains the final versions of many (many) attempts.
+
+i. ESTIMATE/Improved_Initial_State_Est_MPC_EB_wMatrix.ipynb = the first
+file that properly carried out an estimation of the chosen asteroids
+
+ii. ESTIMATE/Clean_estimate-ALL_9.ipynb = where I began estimating for
+all and then 4 asteroids (because all 9 gave very large errors).
+
+iii. ESTIMATE/Clean_estimate_Occult.ipynb = the file in which I created
+the first stellar occultation. I then added many more and created functions
+in the same file. (PS: I did clean the file slightly, but for the long 
+history of creating the stellar occults, see Estimation/Clean_estimate-Occult.ipynb)
+
+iv. ESTIMATE/Clean_estimate_error_reduce.ipynb = added stellar occultations
+and examined how the errors of the positions and velocities decreased
+
+v. ESTIMATE/ALL_Clean_estimate-Occults.ipynb = tried estimating for all 
+and adding stellar occultations for all
 
 
+#--------------------------------------------------------------
 
+Other folders:
 
+In Table_of_Asteroids, in file Table_of_Asteroids/test_Table_code.ipynb,
+I created the table in the Bachelor Thesis which displays all a,e,i,dw values
+(they were all pulled from JPL Horizon and dw was calculated).
 
-
-
-
+In 9_asteroids, I propagated all 9 asteroids (that were examined by Verma et al).
 
 
 
