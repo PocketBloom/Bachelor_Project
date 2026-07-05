@@ -1,3 +1,85 @@
+
+The code in this directory was created for a Bachelor Project on the topic of:
+Ephemerides of Near-Earth Asteroids to Constrain the PPN parameter (beta) and 
+the Solar Quadrupole Moment (J_2o): The Potential of Stellar Occultations.
+
+In order to acheive the results of the project and to map out and estimate the 
+NEAs' ephemerides, the free open-source software Tudat (and TudatPy), was used.
+The code from Tudat is distributed under the BSD 3-Clause License. 
+The code repository for Tudat is available here https://github.com/tudat-team 
+and the examples used to start this research project are found on:
+https://docs.tudat.space/en/latest/ ,  
+https://docs.tudat.space/en/latest/index-examples.html#getting-started-examples ,
+and https://py.api.tudat.space/en/latest/, which are distributed under the same license.
+
+
+The code for this project is divided into two overaching themes:
+propagation and estimation of orbits.
+
+# -------------------------------------------------------------------
+1. PROPAGATION:
+
+In order to properly understand where the asteroids will be, and to eventually
+estimate their ephemerides (so that the underlying effects that govern their motions can 
+be deciferred), I first created a statistically viable model of the Solar System.
+
+I then tested this model by propagating an asteroid and examining its behaviours.
+
+The main code for this are found in the folder PROPAGATION:
+
+i. PROPAGATION/TU3_linear_dw.ipynb = simple propagation case, 
+testing with the Sun as a point-mass, then adding GR, J2, Yark
+and examining the slope of dw
+
+ii. PROPAGATION/TU3_orbit_precession_2.ipynb = propagation using
+the entire Solar System model (so this file contains how I figured
+out how to apply 20 smaller asteroids and their mass to the code).
+
+iii. PROPAGATION/Creating_Plots.ipynb = to properly contextualise
+and explain the results I made this file to showcase all three cases 
+that I tested for into one file. Otherwise I couldn't compare case 1
+(Sun as a point-mass) vs case 2 (GR, J2, Yark).
+
+iv. PROPAGATION/Creating_Errors.ipynb = lastly to showcase the errors 
+of the model I defined different parameters to have a slight and reasonable
+offset. Thereafter I propagated the model with these offsets. The 
+difference in values are the error bars.
+
+# -----
+
+1.2 Planet_Effects
+
+The folder Planet_Effects contains the code I wrote when testing for
+how larger bodies affected asteroid 1998 TU3 (66146).
+
+This was important in order to gain confidence in the model.
+
+I tested for the planets which I believed would have the largest influence 
+and tried to have the planets ON (only test for asteroid TU3, that planet
+and the Sun), and OFF (only test for the asteroid TU3, all other important
+bodies, the Sun and NOT that specific planet). This was beneficial with
+e.g. Julipter, because it caused an oscillatory effect.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# -------------------------------------------------------------
+
+NOTE: below is a message from Tudat, which was automatically printed into the GITHUB 
+when installing Tudat.
+
 The file bias.dat is a table of position and proper motion corrections
 for 26 star catalogs.
 The corrections are provided for both right ascension (RA) and
