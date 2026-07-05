@@ -114,14 +114,8 @@ I created the table in the Bachelor Thesis which displays all a,e,i,dw values
 In 9_asteroids, I propagated all 9 asteroids (that were examined by Verma et al).
 
 
+# -------------------------------------------------------------
 
 
 
 
-
-UPDATE, March 1, 2023
-The start catalog code for catalog UCAC-5 has been corrected from W to
-Y in the comments and headers of the debiasing data file.  W is
-currently the catalog code assigned to Gaia-DR3 and was incorrectly
-assigned to UCAC-5 by the MPC at the time this debiasing scheme was
-developed.
